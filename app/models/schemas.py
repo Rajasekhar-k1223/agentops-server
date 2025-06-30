@@ -31,13 +31,22 @@ class LogData(BaseModel):
     agent_id: str
     logs: str
 
+class SingleError(BaseModel):
+    source: str
+    message: str
+    severity: str
+
 class ErrorData(BaseModel):
     agent_id: str
-    errors: List[Dict[str, Any]]
+    errors: List[SingleError]
+
+class Finding(BaseModel):
+    type: str
+    details: str
 
 class SecurityFinding(BaseModel):
     agent_id: str
-    findings: List[Dict[str, Any]]
+    findings: List[Finding]
 
 class PackagesData(BaseModel):
     agent_id: str

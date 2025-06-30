@@ -23,6 +23,7 @@
 #     return {"status": "received"}
 # agentops-server/app/routes/agents.py
 
+from app.utils.chunking import split_text_chunks
 from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime
 from app.models import schemas
@@ -42,6 +43,9 @@ async def register_agent(agent: schemas.AgentRegister, db: Session = Depends(get
     """
     Registers an agent.
     """
+    print(agent.agent_id)
+    print(agent.os)
+    print(db)
     agent_manager.register(agent.agent_id, agent.os, db)
     return {"status": "registered", "agent_id": agent.agent_id}
 
@@ -64,7 +68,7 @@ async def post_result(result: schemas.AgentCommandResult):
         "command": result.command,
         "output": result.output
     }
-    await mongo_db.command_results.insert_one(doc)
+    mongo_db.command_results.insert_one(doc)
     return {"status": "received"}
 
 # -------------------------------------------------
@@ -77,7 +81,7 @@ async def post_system_info(info: schemas.SystemInfo):
         "timestamp": datetime.utcnow(),
         "system_info": info.system_info
     }
-    await mongo_db.system_info.insert_one(doc)
+    mongo_db.system_info.insert_one(doc)
     return {"status": "system info saved"}
 
 # -------------------------------------------------
@@ -85,13 +89,24 @@ async def post_system_info(info: schemas.SystemInfo):
 # -------------------------------------------------
 @router.post("/logs")
 async def post_logs(logs: schemas.AgentLogs):
-    doc = {
-        "agent_id": logs.agent_id,
-        "timestamp": datetime.utcnow(),
-        "logs": logs.logs
-    }
-    await mongo_db.logs.insert_one(doc)
-    return {"status": "logs saved"}
+    # doc = {
+    #     "agent_id": logs.agent_id,
+    #     "timestamp": datetime.utcnow(),
+    #     "logs": logs.logs
+    # }
+    # mongo_db.logs.insert_one(doc)
+    # return {"status": "logs saved"}
+    chunks = split_text_chunks(logs.logs, chunk_size=50000)
+    docs = []
+    for chunk in chunks:
+        docs.append({
+            "agent_id": logs.agent_id,
+            "timestamp": datetime.utcnow(),
+            "log_chunk": chunk
+        })
+    if docs:
+        mongo_db.logs.insert_many(docs)
+    return {"status": f"{len(docs)} log chunks saved"}
 
 # -------------------------------------------------
 # Errors
@@ -108,7 +123,7 @@ async def post_errors(errors: schemas.ErrorData):
             "severity": e.severity
         })
     if docs:
-        await mongo_db.errors.insert_many(docs)
+        mongo_db.errors.insert_many(docs)
     return {"status": f"{len(docs)} errors saved"}
 
 # -------------------------------------------------
@@ -125,7 +140,7 @@ async def post_security(findings: schemas.SecurityFinding):
             "details": f.details
         })
     if docs:
-        await mongo_db.security_findings.insert_many(docs)
+        mongo_db.security_findings.insert_many(docs)
     return {"status": f"{len(docs)} security findings saved"}
 
 # -------------------------------------------------
@@ -138,7 +153,7 @@ async def post_packages(packages: schemas.AgentPackages):
         "timestamp": datetime.utcnow(),
         "packages": packages.packages
     }
-    await mongo_db.packages.insert_one(doc)
+    mongo_db.packages.insert_one(doc)
     return {"status": "packages saved"}
 
 # -------------------------------------------------
@@ -152,7 +167,7 @@ async def post_services(services: schemas.AgentServices):
         "services": services.services,
         "live_services": services.live_services
     }
-    await mongo_db.services.insert_one(doc)
+    mongo_db.services.insert_one(doc)
     return {"status": "services saved"}
 
 # -------------------------------------------------

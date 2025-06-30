@@ -41,7 +41,7 @@ async def send_command(cmd: CommandRequest):
         "timestamp": datetime.utcnow(),
         "executed": False,
     }
-    await mongo.commands.insert_one(doc)
+    mongo_db.commands.insert_one(doc)
     return {
         "status": "command sent",
         "agent_id": cmd.agent_id,
@@ -57,7 +57,7 @@ async def get_command(agent_id: str):
     Agent polls for next pending command.
     We return the first queued, unexecuted command and mark it as executed.
     """
-    command_doc = await mongo.commands.find_one_and_update(
+    command_doc = mongo_db.commands.find_one_and_update(
         {
             "agent_id": agent_id,
             "executed": False,
