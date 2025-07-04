@@ -151,10 +151,22 @@ async def post_packages(packages: schemas.AgentPackages):
     doc = {
         "agent_id": packages.agent_id,
         "timestamp": datetime.utcnow(),
-        "packages": packages.packages
+        "packages": [pkg.dict() for pkg in packages.packages]
     }
-    mongo_db.packages.insert_one(doc)
-    return {"status": "packages saved"}
+    try:
+        result = await mongo_db.packages.insert_one(doc)
+        return {"status": "packages saved", "inserted_id": str(result.inserted_id)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {e}")
+# @router.post("/packages")
+# async def post_packages(packages: schemas.AgentPackages):
+#     doc = {
+#         "agent_id": packages.agent_id,
+#         "timestamp": datetime.utcnow(),
+#         "packages": packages.packages
+#     }
+#     mongo_db.packages.insert_one(doc)
+#     return {"status": "packages saved"}
 # @router.post("/packages")
 # async def post_packages(packages: schemas.AgentPackages):
 #     package_list = []

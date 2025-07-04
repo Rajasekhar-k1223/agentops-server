@@ -18,7 +18,7 @@ class AgentCommandResult(BaseModel):
 
 class PackageInfo(BaseModel):
     name: str
-    version: str
+    version: Optional[str] 
     
 class AgentPackages(BaseModel):
     agent_id: str
