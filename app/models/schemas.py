@@ -1,6 +1,6 @@
 # agentops-server/app/models/schemas.py
 
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any,Union
 from pydantic import BaseModel
 
 class AgentRegister(BaseModel):
@@ -14,7 +14,7 @@ class CommandRequest(BaseModel):
 class AgentCommandResult(BaseModel):
     agent_id: str
     command: str
-    output: Any
+    output: Union[str,List[Dict[str,str]]]
     
 class AgentPackages(BaseModel):
     agent_id: str
