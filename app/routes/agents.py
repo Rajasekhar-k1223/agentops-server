@@ -158,6 +158,7 @@ async def post_security(findings: schemas.SecurityFinding):
 @router.post("/packages")
 async def post_packages(packages: schemas.AgentPackages):
     package_list = []
+    print(packages.packages)
     for pkg in packages.packages:
         if hasattr(pkg, "dict"):
             package_list.append(pkg.dict())
