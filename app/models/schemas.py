@@ -15,11 +15,14 @@ class AgentCommandResult(BaseModel):
     agent_id: str
     command: str
     output: Union[str,List[Dict[str,str]]]
+
+class PackageInfo(BaseModel):
+    name: str
+    version: str
     
 class AgentPackages(BaseModel):
     agent_id: str
-    packages: List[str]
-
+    packages: List[PackageInfo]
 
 class AgentServices(BaseModel):
     agent_id: str
