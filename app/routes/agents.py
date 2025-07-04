@@ -146,35 +146,35 @@ async def post_security(findings: schemas.SecurityFinding):
 # -------------------------------------------------
 # Packages
 # -------------------------------------------------
-# @router.post("/packages")
-# async def post_packages(packages: schemas.AgentPackages):
-#     doc = {
-#         "agent_id": packages.agent_id,
-#         "timestamp": datetime.utcnow(),
-#         "packages": packages.packages
-#     }
-#     mongo_db.packages.insert_one(doc)
-#     return {"status": "packages saved"}
 @router.post("/packages")
 async def post_packages(packages: schemas.AgentPackages):
-    package_list = []
-    print(packages.packages)
-    for pkg in packages.packages:
-        if hasattr(pkg, "dict"):
-            package_list.append(pkg.dict())
-        elif isinstance(pkg, dict):
-            package_list.append(pkg)
-        else:
-            package_list.append({"name": str(pkg), "version": ""})
-    print(package_list)
     doc = {
         "agent_id": packages.agent_id,
         "timestamp": datetime.utcnow(),
-        "packages": package_list
+        "packages": packages.packages
     }
-    print(doc)
     mongo_db.packages.insert_one(doc)
     return {"status": "packages saved"}
+# @router.post("/packages")
+# async def post_packages(packages: schemas.AgentPackages):
+#     package_list = []
+#     print(packages.packages)
+#     for pkg in packages.packages:
+#         if hasattr(pkg, "dict"):
+#             package_list.append(pkg.dict())
+#         elif isinstance(pkg, dict):
+#             package_list.append(pkg)
+#         else:
+#             package_list.append({"name": str(pkg), "version": ""})
+#     print(package_list)
+#     doc = {
+#         "agent_id": packages.agent_id,
+#         "timestamp": datetime.utcnow(),
+#         "packages": package_list
+#     }
+#     print(doc)
+#     mongo_db.packages.insert_one(doc)
+#     return {"status": "packages saved"}
 # -------------------------------------------------
 # Services
 # -------------------------------------------------
