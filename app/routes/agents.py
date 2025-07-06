@@ -89,24 +89,24 @@ async def post_system_info(info: schemas.SystemInfo):
 # -------------------------------------------------
 @router.post("/logs")
 async def post_logs(logs: schemas.AgentLogs):
-    # doc = {
-    #     "agent_id": logs.agent_id,
-    #     "timestamp": datetime.utcnow(),
-    #     "logs": logs.logs
-    # }
-    # mongo_db.logs.insert_one(doc)
-    # return {"status": "logs saved"}
-    chunks = split_text_chunks(logs.logs, chunk_size=50000)
-    docs = []
-    for chunk in chunks:
-        docs.append({
-            "agent_id": logs.agent_id,
-            "timestamp": datetime.utcnow(),
-            "log_chunk": chunk
-        })
-    if docs:
-        mongo_db.logs.insert_many(docs)
-    return {"status": f"{len(docs)} log chunks saved"}
+    doc = {
+        "agent_id": logs.agent_id,
+        "timestamp": datetime.utcnow(),
+        "logs": logs.logs
+    }
+    mongo_db.logs.insert_one(doc)
+    return {"status": "logs saved"}
+    # chunks = split_text_chunks(logs.logs, chunk_size=50000)
+    # docs = []
+    # for chunk in chunks:
+    #     docs.append({
+    #         "agent_id": logs.agent_id,
+    #         "timestamp": datetime.utcnow(),
+    #         "log_chunk": chunk
+    #     })
+    # if docs:
+    #     mongo_db.logs.insert_many(docs)
+    # return {"status": f"{len(docs)} log chunks saved"}
 
 # -------------------------------------------------
 # Errors
