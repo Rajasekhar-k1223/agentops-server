@@ -94,6 +94,7 @@ async def post_logs(logs: schemas.AgentLogs):
         "timestamp": datetime.utcnow(),
         "logs": logs.logs
     }
+    print(doc)
     mongo_db.logs.insert_one(doc)
     return {"status": "logs saved"}
     # chunks = split_text_chunks(logs.logs, chunk_size=50000)
